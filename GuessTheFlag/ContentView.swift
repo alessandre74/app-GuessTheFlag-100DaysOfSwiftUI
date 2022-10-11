@@ -13,6 +13,8 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var countScore = 0
     @State private var countQuestion = 0
+    @State private var selectFlag = 0
+
     @State private var countries = [
         "Estonia",
         "France",
@@ -60,20 +62,24 @@ struct ContentView: View {
                             if countQuestion == 8 {
                                 showingQuetion = true
                             } else {
-                             flagTapped(number)
+                                withAnimation {
+                                    selectFlag = number
+                                    flagTapped(number)
+                                }
                             }
-                            
-                            
+
                         } label: {
                             FlagImage(countries: countries, number: number)
                         }
+                        .opacity(showingScore && selectFlag != number ? 0.25 : 1).animation(.default.delay(0.25), value: showingScore)
+                        .scaleEffect(showingScore && selectFlag != number ? 0.25 : 1).animation(.default.delay(0.45), value: showingScore)
+                        .rotation3DEffect(.degrees(showingScore && selectFlag == number ? 360: 0), axis: (x: 0, y: 1, z: 0) )
                     }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
                 .background(.regularMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
-                
                 
                 Spacer()
                 Spacer()
@@ -99,8 +105,7 @@ struct ContentView: View {
     }
     
     func flagTapped (_ number: Int) {
-        
-        
+
         if number == correctAnswer {
             countScore += 1
             scoreTitle = "Correct"
@@ -152,7 +157,6 @@ struct FlagImage: View {
             .shadow(radius: 5)
     }
 }
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
